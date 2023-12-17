@@ -1,6 +1,7 @@
 import tkinter as tk
 import copy
 import nltk
+import time
 
 # Add this back for first time users
 # nltk.download('words')
@@ -91,8 +92,8 @@ submit_button.grid(row=5, column=0, columnspan=4, pady=10)
 window.mainloop()
 
 # Second Part 
-
-genSet = []
+startTime = time.time()
+genSet = set()
 def wordGenerator(currData, word, xCoord, yCoord, val):
     #Assume that max word is 8
     if currData[xCoord][yCoord] == "X" or val == 8:
@@ -102,8 +103,8 @@ def wordGenerator(currData, word, xCoord, yCoord, val):
     currData[xCoord][yCoord] = "X"
     #Do word validation check here. 
     word += currVal
-    if len(word) >= 3 and word in englWords and word not in genSet:
-        genSet.append(word)
+    if len(word) >= 3 and word in englWords:
+        genSet.add(word)
     # print(word)
     # print(currData)
         
@@ -139,6 +140,8 @@ for i in range(4):
         wordGenerator(dataCPY,"", i,j, 0)
 
 print("End of Computation")
-print(genSet)
+endTime = time.time()
+print("Elapsed Time: {:.2f} seconds".format(endTime - startTime))
+# print(genSet)
 print(sorted(genSet, key=len, reverse=True))
 
