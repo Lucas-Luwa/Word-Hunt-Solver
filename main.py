@@ -1,11 +1,20 @@
 import tkinter as tk
+import copy
+
 def moveEntry(deltaX, deltaY):
     currEntry = window.focus_get()
     currRow, currCol = int(currEntry.grid_info()["row"]), int(currEntry.grid_info()["column"])
     newRow, newCol = currRow + deltaY, currCol + deltaX
+    # print(newRow, newCol)
 
     if 0 <= newRow and newRow < 4 and 0 <= newCol and newCol < 4:
         entries[newRow][newCol].focus_set()
+    # Continue
+    if newCol == 4 and newRow < 3:
+        entries[newRow + 1][0].focus_set()
+    if newCol == -1 and newRow > 0:
+        entries[newRow - 1][3].focus_set()
+    
 
 def arrowMovement(event):
     key = event.keysym
@@ -46,6 +55,7 @@ window.bind("<Up>", arrowMovement)
 
 entries[0][0].focus_set()
 
+data = []
 def submitVals():
     #Input Validation
     endTask = False
@@ -59,7 +69,6 @@ def submitVals():
                 break
      
     if not endTask:
-        data = []
         for i in range(4):
             rowData = []
             for j in range(4):
@@ -69,8 +78,54 @@ def submitVals():
 
         for row in data:
             print(row)
+        window.destroy()
 
 submit_button = tk.Button(window, text="Submit", command=submitVals)
 submit_button.grid(row=5, column=0, columnspan=4, pady=10)
 
 window.mainloop()
+
+# Second Part 
+
+dataCPY = copy.deepcopy(data)
+
+def wordGenerator(currData, word, xCoord, yCoord, val):
+    if currData[xCoord][yCoord] == "X" or val == 10:
+        return 
+    # print(len(word))
+    currVal = currData[xCoord][yCoord]
+    currData[xCoord][yCoord] = "X"
+    #Do word validation check here. 
+    word += currVal
+    # print(word)
+    # print(currData)
+    #Loop through all other options
+    if (xCoord - 1) >= 0 and (yCoord - 1) >= 0 and not currData[xCoord - 1][yCoord - 1] == "X":
+        dataCPY2 = copy.deepcopy(currData)
+        wordGenerator(dataCPY2, word, xCoord - 1, yCoord - 1, val + 1)
+    if (xCoord - 1) >= 0 and not currData[xCoord - 1][yCoord] == "X":
+        dataCPY2 = copy.deepcopy(currData)
+        wordGenerator(dataCPY2, word, xCoord - 1, yCoord, val + 1)
+    if (xCoord - 1) >= 0 and (yCoord + 1) <= 3 and not currData[xCoord - 1][yCoord + 1] == "X":
+        dataCPY2 = copy.deepcopy(currData)
+        wordGenerator(dataCPY2, word, xCoord - 1, yCoord + 1, val + 1)   
+    if (xCoord + 1) <= 3 and (yCoord + 1) <= 3 and not currData[xCoord + 1][yCoord + 1] == "X":
+        dataCPY2 = copy.deepcopy(currData)
+        wordGenerator(dataCPY2, word, xCoord + 1, yCoord + 1, val + 1)
+    if (xCoord + 1) <= 3 and not currData[xCoord + 1][yCoord] == "X":
+        dataCPY2 = copy.deepcopy(currData)
+        wordGenerator(dataCPY2, word, xCoord + 1, yCoord, val + 1)
+    if (xCoord + 1) <= 3 and (yCoord - 1) >= 0 and not currData[xCoord + 1][yCoord - 1] == "X":
+        dataCPY2 = copy.deepcopy(currData)
+        wordGenerator(dataCPY2, word, xCoord + 1, yCoord - 1, val + 1)  
+    if (yCoord - 1) >= 0 and not currData[xCoord][yCoord - 1] == "X":
+        dataCPY2 = copy.deepcopy(currData)
+        wordGenerator(dataCPY2, word, xCoord, yCoord - 1, val + 1)
+    if (yCoord + 1) <= 3 and not currData[xCoord][yCoord + 1] == "X":
+        dataCPY2 = copy.deepcopy(currData)
+        wordGenerator(dataCPY2, word, xCoord, yCoord + 1, val + 1) 
+    return
+        
+
+wordGenerator(dataCPY,"", 0,0, 0)
+
