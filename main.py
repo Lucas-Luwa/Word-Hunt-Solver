@@ -1,5 +1,11 @@
 import tkinter as tk
 import copy
+import nltk
+
+# Add this back for first time users
+# nltk.download('words')
+englWords = set(nltk.corpus.words.words())
+
 
 def moveEntry(deltaX, deltaY):
     currEntry = window.focus_get()
@@ -88,7 +94,7 @@ window.mainloop()
 # Second Part 
 
 dataCPY = copy.deepcopy(data)
-
+genSet = []
 def wordGenerator(currData, word, xCoord, yCoord, val):
     if currData[xCoord][yCoord] == "X" or val == 10:
         return 
@@ -97,8 +103,11 @@ def wordGenerator(currData, word, xCoord, yCoord, val):
     currData[xCoord][yCoord] = "X"
     #Do word validation check here. 
     word += currVal
+    if len(word) >= 3 and word in englWords:
+        genSet.append(word)
     # print(word)
     # print(currData)
+        
     #Loop through all other options
     if (xCoord - 1) >= 0 and (yCoord - 1) >= 0 and not currData[xCoord - 1][yCoord - 1] == "X":
         dataCPY2 = copy.deepcopy(currData)
@@ -126,6 +135,7 @@ def wordGenerator(currData, word, xCoord, yCoord, val):
         wordGenerator(dataCPY2, word, xCoord, yCoord + 1, val + 1) 
     return
         
-
 wordGenerator(dataCPY,"", 0,0, 0)
+print("hi")
+print(genSet)
 
