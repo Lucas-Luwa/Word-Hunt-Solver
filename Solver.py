@@ -6,7 +6,6 @@ import nltk
 # nltk.download('words')
 englWords = set(nltk.corpus.words.words())
 
-
 def moveEntry(deltaX, deltaY):
     currEntry = window.focus_get()
     currRow, currCol = int(currEntry.grid_info()["row"]), int(currEntry.grid_info()["column"])
@@ -93,17 +92,17 @@ window.mainloop()
 
 # Second Part 
 
-dataCPY = copy.deepcopy(data)
 genSet = []
 def wordGenerator(currData, word, xCoord, yCoord, val):
-    if currData[xCoord][yCoord] == "X" or val == 10:
+    #Assume that max word is 8
+    if currData[xCoord][yCoord] == "X" or val == 8:
         return 
     # print(len(word))
     currVal = currData[xCoord][yCoord]
     currData[xCoord][yCoord] = "X"
     #Do word validation check here. 
     word += currVal
-    if len(word) >= 3 and word in englWords:
+    if len(word) >= 3 and word in englWords and word not in genSet:
         genSet.append(word)
     # print(word)
     # print(currData)
@@ -134,8 +133,12 @@ def wordGenerator(currData, word, xCoord, yCoord, val):
         dataCPY2 = copy.deepcopy(currData)
         wordGenerator(dataCPY2, word, xCoord, yCoord + 1, val + 1) 
     return
-        
-wordGenerator(dataCPY,"", 0,0, 0)
-print("hi")
+for i in range(4):
+    for j in range(4):
+        dataCPY = copy.deepcopy(data)    
+        wordGenerator(dataCPY,"", i,j, 0)
+
+print("End of Computation")
 print(genSet)
+print(sorted(genSet, key=len, reverse=True))
 
