@@ -3,15 +3,20 @@ import numpy as np
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-def plotter(lines_to_draw):
+def plotter(inputLines, filledTile=None):
     gridNum = 4
 
     fig = Figure(figsize=(6, 6))
     plot = fig.add_subplot(1, 1, 1)
 
-    for line in lines_to_draw:
+    for line in inputLines:
         start = line[0]; end = line[1]
         plot.plot([start % gridNum, end % gridNum], [start // gridNum, end // gridNum], 'k-')
+
+    if filledTile is not None:
+        fillSqX = filledTile % gridNum -0.5
+        fillSqY = filledTile // gridNum - 0.5
+        plot.fill_between([fillSqX, fillSqX + 1], [fillSqY, fillSqY], [fillSqY + 1, fillSqY + 1], color='lightgreen', alpha=0.75)
 
     plot.grid(True)
     plot.set_xticks(np.arange(-0.5, gridNum))
@@ -25,31 +30,77 @@ def plotter(lines_to_draw):
 def nxtWord(event):
     global currLineNum
     currLineNum = (currLineNum + 1) % len(allWords)
-    plotter(allWords[currLineNum])
+    plotter(allWords[currLineNum], initNode[currLineNum])
+    currWord.set(f"Current Word: {wordValues[currLineNum]} | Word #: {currLineNum + 1}/{numElements} | Points: {pointValues[currLineNum]}")
+
 
 def prevWord(event):
     global currLineNum
     currLineNum = (currLineNum - 1) % len(allWords)
-    plotter(allWords[currLineNum])
+    plotter(allWords[currLineNum], initNode[currLineNum])
+    currWord.set(f"Current Word: {wordValues[currLineNum]} | Word #: {currLineNum + 1}/{numElements} | Points: {pointValues[currLineNum]}")
 
-window = tk.Tk()
-window.title("Solved Words")
 
-window.grid_rowconfigure(1, weight=1)
-window.grid_columnconfigure(0, weight=1)
+def mainContents(gridContents):
+    global window, currLineNum, allWords, wordValues, currWord, initNode, numElements, pointValues
+    window = tk.Tk()
+    window.title("Solved Words")
 
-allWords = [
-    [(0, 1), (1, 2), (2, 3), (0, 4), (1,
-                                       5), (5, 6), (3, 7)],
-    [(0, 1), (1, 2), (2, 3), (3, 0), (0, 5), (1, 6), (2, 7), (3, 4)]
-    # Add more sets of lines as needed
-]
+    window.grid_rowconfigure(1, weight=1)
+    window.grid_columnconfigure(0, weight=1)
 
-currLineNum = 0
+    allWords = []
+    wordValues = []
+    initNode = []
+    pointValues = []
+    for element in gridContents:
+        # print(element[0], element[1])
+        wordValues.append(element[0])
+        currInitNode, edgeList = edgeGenerator(element[1])
+        allWords.append(edgeList)
+        initNode.append(currInitNode)
+        pointValues.append(pointCalc(len(element[0])))
 
-plotter(allWords[currLineNum])
+    numElements = len(wordValues)
+    print("Potential Total: ", sum(pointValues))
 
-window.bind("<Right>", nxtWord)
-window.bind("<Left>", prevWord)
+    currLineNum = 0
+    currWord = tk.StringVar()
+    currWord.set(f"Current Word: {wordValues[currLineNum]} | Word #: {currLineNum + 1}/{numElements} | Points: {pointValues[currLineNum]}")
 
-window.mainloop()
+    wordLabel = tk.Label(window, textvariable=currWord, font=("Arial", 12))
+    wordLabel.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+
+    plotter(allWords[currLineNum], initNode[0])
+
+    window.bind("<Right>", nxtWord)
+    window.bind("<Left>", prevWord)
+
+    window.mainloop()
+
+def edgeGenerator(inputStr):
+    retList = []
+    currX = int(inputStr[0])
+    currY = int(inputStr[1])
+    currNode = (currX * 4 + currY)
+    initNode = currNode
+    index = 2
+    while index < len(inputStr):
+        nextX = int(inputStr[index])
+        nextY = int(inputStr[index + 1])
+        nextNode = (nextX * 4 + nextY)
+        retList.append((currNode, nextNode))
+        currNode = nextNode
+        index+=2
+    return initNode, retList
+
+def pointCalc(num):
+    vals = [100, 400, 800, 1200, 2200]
+    return vals[num - 3]
+
+# Initial Testing
+mainContents([('hedge', '2111102030'), ('badge', '0100102011'), ('badge', '0100102030'), ('bead', '01110010'), ('head', '21110010'), 
+              ('bade', '01001011'), ('edge', '11102030'), ('ghee', '20213223'), ('abed', '00011110'), ('dae', '100011'), ('edh', '111021'), 
+              ('gee', '132332'), ('ged', '201110'), ('beg', '011120'), ('fee', '313223'), ('deg', '101120'), ('fee', '332332'), 
+              ('bad', '010010'), ('jed', '221110'), ('fee', '122332'), ('fee', '333223'), ('ade', '001011'), ('fed', '121110'), 
+              ('bae', '010011'), ('deb', '101101'), ('bed', '011110'), ('dab', '100001')])
