@@ -50,6 +50,9 @@ def prevWord(event):
 
 def mainContents(gridStart, gridContents):
     global window, currLineNum, allWords, wordValues, currWord, initNode, numElements, pointValues, initChars
+    if len(gridContents) == 0: 
+        print("Error: No valid words")
+        return 
     initChars = gridStart
     window = tk.Tk()
     window.title("Solved Words")

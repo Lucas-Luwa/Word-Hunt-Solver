@@ -57,7 +57,7 @@ window.bind("<Up>", arrowMovement)
 
 entries[0][0].focus_set()
 
-def submitVals():
+def submitVals(event):
     #Input Validation
     endTask = False
     for i in range(4):
@@ -81,8 +81,7 @@ def submitVals():
         global data
         data = tempData
 
-submit_button = tk.Button(window, text="Submit", command=submitVals)
-submit_button.grid(row=5, column=0, columnspan=4, pady=10)
+window.bind("<Return>", submitVals)
 
 window.mainloop()
 
