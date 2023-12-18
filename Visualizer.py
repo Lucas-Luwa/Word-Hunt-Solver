@@ -103,7 +103,7 @@ def edgeGenerator(inputStr):
     return initNode, retList
 
 def pointCalc(num):
-    vals = [100, 400, 800, 1200, 2200]
+    vals = [100, 400, 800, 1200,1800, 2200]
     return vals[num - 3]
 
 # Initial Testing
