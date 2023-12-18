@@ -1,4 +1,5 @@
 import tkinter as tk
+import copy
 import nltk
 import time
 
@@ -10,6 +11,7 @@ def moveEntry(deltaX, deltaY):
     currEntry = window.focus_get()
     currRow, currCol = int(currEntry.grid_info()["row"]), int(currEntry.grid_info()["column"])
     newRow, newCol = currRow + deltaY, currCol + deltaX
+    # print(newRow, newCol)
 
     if 0 <= newRow and newRow < 4 and 0 <= newCol and newCol < 4:
         entries[newRow][newCol].focus_set()
@@ -32,12 +34,15 @@ def arrowMovement(event):
     elif key == "Up":
         moveEntry(0, -1)
 
+
+
 window = tk.Tk()
 window.geometry("290x350")
 window.configure(bg = 'lightgreen')
 window.title("Word Hunt Solver")
 
 mainlabel = tk.Label(window, text = "Enter Grid ", font=("Helvetica", 16), height = 0) 
+# mainlabel.place(x=0, y=2)
 mainlabel.configure(bg = 'lightgreen')
 
 entries = []
@@ -56,6 +61,7 @@ window.bind("<Up>", arrowMovement)
 
 entries[0][0].focus_set()
 
+data = []
 def submitVals():
     #Input Validation
     endTask = False
@@ -67,74 +73,75 @@ def submitVals():
             if endTask: 
                 print("Invalid Inputs. Please try again.")
                 break
-
-    tempData = ""
+     
     if not endTask:
         for i in range(4):
+            rowData = []
             for j in range(4):
-                value = str(entries[i][j].get())
-                tempData = tempData + value
+                value = entries[i][j].get()
+                rowData.append(value)
+            data.append(rowData)
 
+        for row in data:
+            print(row)
         window.destroy()
-
-        global data
-        data = tempData
 
 submit_button = tk.Button(window, text="Submit", command=submitVals)
 submit_button.grid(row=5, column=0, columnspan=4, pady=10)
 
 window.mainloop()
 
-print("Input Value: ", data)
-
 # Second Part 
 startTime = time.time()
 genSet = set()
 def wordGenerator(currData, word, xCoord, yCoord, val):
     #Assume that max word is 8
-    #Convert by doing this data[3 * xCoord + yCoord]
-    if currData[3 * xCoord + yCoord] == "X" or val == 8:
+    if currData[xCoord][yCoord] == "X" or val == 8:
         return 
-    currVal = currData[3 * xCoord + yCoord]
-    currData = currData[:3 * xCoord + yCoord] + "X" + currData[3 * xCoord + yCoord + 1:]
+    # print(len(word))
+    currVal = currData[xCoord][yCoord]
+    currData[xCoord][yCoord] = "X"
     #Do word validation check here. 
     word += currVal
     if len(word) >= 3 and word in englWords:
         genSet.add(word)
-
+    # print(word)
+    # print(currData)
         
     #Loop through all other options
-    if (xCoord - 1) >= 0 and (yCoord - 1) >= 0 and not currData[3 * (xCoord - 1) + (yCoord - 1)] == "X":
-        dataCPY2 = str(currData)
+    if (xCoord - 1) >= 0 and (yCoord - 1) >= 0 and not currData[xCoord - 1][yCoord - 1] == "X":
+        dataCPY2 = copy.deepcopy(currData)
         wordGenerator(dataCPY2, word, xCoord - 1, yCoord - 1, val + 1)
-    if (xCoord - 1) >= 0 and not currData[3 * (xCoord - 1) + (yCoord)] == "X":
-        dataCPY2 = str(currData)
+    if (xCoord - 1) >= 0 and not currData[xCoord - 1][yCoord] == "X":
+        dataCPY2 = copy.deepcopy(currData)
         wordGenerator(dataCPY2, word, xCoord - 1, yCoord, val + 1)
-    if (xCoord - 1) >= 0 and (yCoord + 1) <= 3 and not currData[3 * (xCoord - 1) + (yCoord + 1)] == "X":
-        dataCPY2 = str(currData)
+    if (xCoord - 1) >= 0 and (yCoord + 1) <= 3 and not currData[xCoord - 1][yCoord + 1] == "X":
+        dataCPY2 = copy.deepcopy(currData)
         wordGenerator(dataCPY2, word, xCoord - 1, yCoord + 1, val + 1)   
-    if (xCoord + 1) <= 3 and (yCoord + 1) <= 3 and not currData[3 * (xCoord + 1) + (yCoord + 1)] == "X":
-        dataCPY2 = str(currData)
+    if (xCoord + 1) <= 3 and (yCoord + 1) <= 3 and not currData[xCoord + 1][yCoord + 1] == "X":
+        dataCPY2 = copy.deepcopy(currData)
         wordGenerator(dataCPY2, word, xCoord + 1, yCoord + 1, val + 1)
-    if (xCoord + 1) <= 3 and not currData[3 * (xCoord + 1) + (yCoord)] == "X":
-        dataCPY2 = str(currData)
+    if (xCoord + 1) <= 3 and not currData[xCoord + 1][yCoord] == "X":
+        dataCPY2 = copy.deepcopy(currData)
         wordGenerator(dataCPY2, word, xCoord + 1, yCoord, val + 1)
-    if (xCoord + 1) <= 3 and (yCoord - 1) >= 0 and not currData[3 * (xCoord + 1) + (yCoord - 1)] == "X":
-        dataCPY2 = str(currData)
+    if (xCoord + 1) <= 3 and (yCoord - 1) >= 0 and not currData[xCoord + 1][yCoord - 1] == "X":
+        dataCPY2 = copy.deepcopy(currData)
         wordGenerator(dataCPY2, word, xCoord + 1, yCoord - 1, val + 1)  
-    if (yCoord - 1) >= 0 and not currData[3 * (xCoord) + (yCoord - 1)] == "X":
-        dataCPY2 = str(currData)
+    if (yCoord - 1) >= 0 and not currData[xCoord][yCoord - 1] == "X":
+        dataCPY2 = copy.deepcopy(currData)
         wordGenerator(dataCPY2, word, xCoord, yCoord - 1, val + 1)
-    if (yCoord + 1) <= 3 and not currData[3 * (xCoord) + (yCoord + 1)] == "X":
-        dataCPY2 = str(currData)
+    if (yCoord + 1) <= 3 and not currData[xCoord][yCoord + 1] == "X":
+        dataCPY2 = copy.deepcopy(currData)
         wordGenerator(dataCPY2, word, xCoord, yCoord + 1, val + 1) 
     return
 for i in range(4):
     for j in range(4):
-        dataCPY = str(data)  
+        dataCPY = copy.deepcopy(data)    
         wordGenerator(dataCPY,"", i,j, 0)
 
 print("End of Computation")
 endTime = time.time()
 print("Elapsed Time: {:.2f} seconds".format(endTime - startTime))
+# print(genSet)
 print(sorted(genSet, key=len, reverse=True))
+
