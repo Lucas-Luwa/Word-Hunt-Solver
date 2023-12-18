@@ -2,7 +2,7 @@
 
 This short personal project takes in a grid from GamePigeon's Word Hunt game and finds the longest words to maximize your score. For more information about this project, please visit my website:
 
-https://lucasluwa.com/Projects/Individual/Stonks/Stocks
+https://lucasluwa.com/Projects/Individual/WordHuntSolver/WordHunt
 
 Project Overview:
 This project has two main files:
