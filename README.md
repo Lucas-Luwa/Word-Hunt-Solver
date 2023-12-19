@@ -10,7 +10,7 @@ This project has two main files:
 - Visualizer.py: Generates a grid and marks the strokes needed to get a particular word. To move between each word, use the left and right arrows on your keyboard.
 
 Archive Files:
-- SolverOG.py: This file contains uses deepcopies of 2D arrays to generate each word. This turned out to be far too slow, which is why I moved to a string-based approach in FasterSolver.py
+- SolverOG.py: This file uses deepcopies of 2D arrays to generate each word. This turned out to be far too slow, which is why I moved to a string-based approach in FasterSolver.py
 
 
 
