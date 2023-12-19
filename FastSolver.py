@@ -34,7 +34,7 @@ def arrowMovement(event):
         moveEntry(0, -1)
 
 window = tk.Tk()
-window.geometry("290x350")
+window.geometry("290x310")
 window.configure(bg = 'lightgreen')
 window.title("Word Hunt Solver")
 
